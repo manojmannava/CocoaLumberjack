@@ -1006,8 +1006,14 @@ NSString * __nullable DDExtractFileNameWithoutExtension(const char *filePath, BO
 #pragma clang diagnostic pop
 #endif
         _options      = options;
-        _timestamp    = timestamp ?: [NSDate new];
-
+        
+        NSDateFormatter *estDf = [[NSDateFormatter alloc] init];
+        [estDf setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"EST"]];
+        [estDf setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSString* localTime = [estDf stringFromDate:[NSDate date]];
+        
+        _timestamp    = timestamp ?: (NSDate *) localTime;
+        
         __uint64_t tid;
         if (pthread_threadid_np(NULL, &tid) == 0) {
             _threadID = [[NSString alloc] initWithFormat:@"%llu", tid];
